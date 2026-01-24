@@ -1,0 +1,2008 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blockchain - Curso Completo</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-card: #1a1a25;
+            --bg-code: #0d0d12;
+            --accent: #00d4ff;
+            --accent-secondary: #7c3aed;
+            --accent-green: #10b981;
+            --accent-orange: #f59e0b;
+            --accent-pink: #ec4899;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0b0;
+            --border: #2a2a3a;
+            --gradient-1: linear-gradient(135deg, #00d4ff 0%, #7c3aed 100%);
+            --gradient-2: linear-gradient(135deg, #7c3aed 0%, #ec4899 100%);
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 280px;
+            height: 100vh;
+            background: rgba(10, 10, 15, 0.98);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid var(--border);
+            z-index: 1000;
+            padding: 1.5rem 0;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 0 1.5rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+            font-size: 1.3rem;
+            font-weight: bold;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .sidebar-toggle {
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1001;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--accent);
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-toggle:hover {
+            background: var(--accent);
+            color: var(--bg-primary);
+        }
+
+        /* Sidebar visible - boton a la derecha del sidebar */
+        body:not(.sidebar-hidden) .sidebar-toggle {
+            left: 290px;
+        }
+
+        /* Sidebar oculto */
+        body.sidebar-hidden .sidebar {
+            transform: translateX(-100%);
+        }
+
+        body.sidebar-hidden main {
+            margin-left: 0;
+        }
+
+        body.sidebar-hidden .presentation-nav {
+            left: 0;
+	    bottom: 0;
+        }
+
+        .nav-groups {
+            flex: 1;
+            padding: 1rem 0;
+            overflow-y: auto;
+        }
+
+        .nav-group {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-group-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s;
+        }
+
+        .nav-group-header:hover {
+            color: var(--accent);
+            background: rgba(0, 212, 255, 0.05);
+        }
+
+        .nav-group-header .group-icon {
+            margin-right: 0.5rem;
+        }
+
+        .nav-group-header .toggle-icon {
+            transition: transform 0.3s;
+            font-size: 0.7rem;
+        }
+
+        .nav-group.collapsed .toggle-icon {
+            transform: rotate(-90deg);
+        }
+
+        .nav-group.collapsed .nav-links {
+            display: none;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-links li {
+            margin: 0;
+        }
+
+        .nav-links a {
+            display: block;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            padding: 0.6rem 1.5rem 0.6rem 2.5rem;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent);
+            background: rgba(0, 212, 255, 0.05);
+            border-left-color: var(--accent);
+        }
+
+        .nav-links a.active {
+            color: var(--accent);
+            background: rgba(0, 212, 255, 0.1);
+            border-left-color: var(--accent);
+        }
+
+        .sidebar-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .mode-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+        }
+
+        .mode-toggle label:first-of-type {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .switch {
+            position: relative;
+            width: 50px;
+            height: 26px;
+        }
+
+        .switch input { opacity: 0; width: 0; height: 0; }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--bg-card);
+            border-radius: 26px;
+            transition: 0.3s;
+            border: 1px solid var(--border);
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 2px;
+            background: var(--accent);
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+
+        input:checked + .slider { background: var(--accent-secondary); }
+        input:checked + .slider:before { transform: translateX(22px); }
+
+        /* Main Content */
+        main {
+            margin-left: 280px;
+            padding-top: 20px;
+            transition: margin-left 0.3s ease;
+        }
+
+        section {
+            min-height: 100vh;
+            padding: 4rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Presentation Mode */
+        body.presentation-mode {
+            overflow: hidden;
+        }
+
+        body.presentation-mode main {
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        body.presentation-mode section {
+            display: none !important;
+            position: fixed;
+            top: 0;
+            left: 280px;
+            right: 0;
+            bottom: 0;
+            min-height: auto;
+            height: 100vh;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            padding: 2rem 2rem 6rem;
+            overflow-y: auto;
+            overflow-x: hidden;
+            margin: 0;
+            max-width: none;
+            background: var(--bg-primary);
+        }
+
+        body.presentation-mode section.active {
+            display: block !important;
+        }
+
+        body.presentation-mode section > * {
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        body.presentation-mode section.hero {
+            display: none !important;
+        }
+
+        body.presentation-mode section.hero.active {
+            display: flex !important;
+            justify-content: center;
+            align-items: center;
+        }
+
+        body.sidebar-hidden.presentation-mode section {
+            left: 0;
+        }
+
+        .presentation-nav {
+            display: none;
+            position: fixed;
+            bottom: 1.5rem;
+            left: 280px;
+            right: 0;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            z-index: 1002;
+            background: rgba(10, 10, 15, 0.9);
+            padding: 1rem;
+            backdrop-filter: blur(10px);
+        }
+
+        body.presentation-mode .presentation-nav {
+            display: flex;
+        }
+
+        body.sidebar-hidden .presentation-nav,
+        body.sidebar-hidden.presentation-mode .presentation-nav {
+            left: 0;
+        }
+
+        @media (max-width: 1024px) {
+            .presentation-nav {
+                left: 0;
+            }
+            body.presentation-mode section {
+                left: 0;
+                padding: 2rem 1rem 6rem;
+            }
+        }
+
+        .pres-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .pres-btn:hover {
+            background: var(--accent);
+            color: var(--bg-primary);
+        }
+
+        .slide-counter {
+            background: var(--bg-card);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        /* Typography */
+        h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            margin-bottom: 1.5rem;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h2 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            margin-bottom: 1rem;
+            color: var(--accent);
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin: 2rem 0 1rem;
+            color: var(--accent-secondary);
+        }
+
+        h4 {
+            font-size: 1.2rem;
+            margin: 1.5rem 0 0.75rem;
+            color: var(--accent-green);
+        }
+
+        p {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .highlight { color: var(--accent); font-weight: 600; }
+        .highlight-purple { color: var(--accent-secondary); font-weight: 600; }
+        .highlight-green { color: var(--accent-green); font-weight: 600; }
+        .highlight-orange { color: var(--accent-orange); font-weight: 600; }
+
+        /* Cards */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+            box-shadow: 0 10px 40px rgba(0, 212, 255, 0.1);
+        }
+
+        .card-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .card h4 {
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Code Blocks */
+        pre {
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+            position: relative;
+        }
+
+        code {
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 0.9rem;
+            color: var(--accent-green);
+        }
+
+        .code-label {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: var(--accent-secondary);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+        }
+
+        /* Blockchain Visualization */
+        .blockchain-viz {
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+            padding: 1rem 0;
+            margin: 1rem 0;
+        }
+
+        .block {
+            min-width: 200px;
+            background: var(--bg-card);
+            border: 2px solid var(--accent);
+            border-radius: 12px;
+            padding: 1rem;
+            position: relative;
+        }
+
+        .block::after {
+            content: '→';
+            position: absolute;
+            right: -1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--accent);
+            font-size: 1.5rem;
+        }
+
+        .block:last-child::after { display: none; }
+
+        .block-header {
+            background: var(--accent);
+            color: var(--bg-primary);
+            padding: 0.5rem;
+            border-radius: 6px;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 0.75rem;
+        }
+
+        .block-data {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .block-data span {
+            display: block;
+            margin: 0.25rem 0;
+        }
+
+        .block-hash {
+            font-family: monospace;
+            font-size: 0.7rem;
+            color: var(--accent-green);
+            word-break: break-all;
+        }
+
+        /* Lists */
+        ul, ol {
+            margin: 1rem 0 1rem 2rem;
+            color: var(--text-secondary);
+        }
+
+        li { margin: 0.5rem 0; }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(ellipse at center, rgba(124, 58, 237, 0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-content { position: relative; z-index: 1; }
+
+        .hero p {
+            font-size: 1.25rem;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 3rem;
+            margin-top: 3rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--accent);
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-card);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: var(--bg-secondary);
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        td { color: var(--text-secondary); }
+
+        tr:hover td { background: rgba(0, 212, 255, 0.05); }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge-blue { background: rgba(0, 212, 255, 0.2); color: var(--accent); }
+        .badge-purple { background: rgba(124, 58, 237, 0.2); color: var(--accent-secondary); }
+        .badge-green { background: rgba(16, 185, 129, 0.2); color: var(--accent-green); }
+        .badge-orange { background: rgba(245, 158, 11, 0.2); color: var(--accent-orange); }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate { animation: fadeInUp 0.6s ease forwards; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .pulse { animation: pulse 2s infinite; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .float { animation: float 3s ease-in-out infinite; }
+
+        /* Diagrams */
+        .diagram {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 2rem 0;
+            text-align: center;
+        }
+
+        .flow-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .flow-item {
+            background: var(--bg-card);
+            border: 2px solid var(--accent);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            min-width: 120px;
+        }
+
+        .flow-arrow {
+            color: var(--accent);
+            font-size: 1.5rem;
+        }
+
+        /* Sidebar overlay para movil */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            body:not(.sidebar-hidden) .sidebar-toggle {
+                left: 1rem;
+            }
+            .sidebar.open ~ .sidebar-toggle {
+                left: 290px;
+            }
+            main {
+                margin-left: 0;
+            }
+            body.sidebar-hidden main {
+                margin-left: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            section { padding: 3rem 1rem; }
+            .hero-stats { gap: 1.5rem; }
+            .card-grid { grid-template-columns: 1fr; }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-secondary); }
+        ::-webkit-scrollbar-thumb { background: var(--accent-secondary); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+        .sidebar::-webkit-scrollbar { width: 4px; }
+        .sidebar::-webkit-scrollbar-track { background: transparent; }
+        .sidebar::-webkit-scrollbar-thumb { background: var(--border); }
+        .sidebar::-webkit-scrollbar-thumb:hover { background: var(--accent-secondary); }
+
+        /* Warning/Info boxes */
+        .info-box {
+            background: rgba(0, 212, 255, 0.1);
+            border-left: 4px solid var(--accent);
+            padding: 1rem 1.5rem;
+            margin: 1rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .warning-box {
+            background: rgba(245, 158, 11, 0.1);
+            border-left: 4px solid var(--accent-orange);
+            padding: 1rem 1.5rem;
+            margin: 1rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        /* Technical Note Box */
+        .technical-note {
+            background: rgba(124, 58, 237, 0.1);
+            border-left: 4px solid var(--accent-secondary);
+            padding: 1rem 1.5rem;
+            margin: 1rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .technical-note::before {
+            content: "Nota tecnica (no obligatoria para el curso)";
+            display: block;
+            font-weight: bold;
+            color: var(--accent-secondary);
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        /* Section divider */
+        .section-divider {
+            height: 2px;
+            background: var(--gradient-1);
+            margin: 3rem 0;
+            border-radius: 2px;
+        }
+
+        /* Feature list */
+        .feature-list {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .feature-list li {
+            padding: 0.75rem 0;
+            padding-left: 2rem;
+            position: relative;
+        }
+
+        .feature-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--accent-green);
+            font-weight: bold;
+        }
+
+        /* Two columns */
+        .two-columns {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+        }
+
+        @media (max-width: 900px) {
+            .two-columns { grid-template-columns: 1fr; }
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Sidebar Toggle Button -->
+    <button class="sidebar-toggle" id="sidebarToggle" title="Ocultar/Mostrar menu">◀</button>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">⛓️ Blockchain Academy</div>
+        </div>
+
+        <div class="nav-groups">
+            <!-- Grupo: Fundamentos -->
+            <div class="nav-group">
+                <div class="nav-group-header">
+                    <span><span class="group-icon">📚</span> Fundamentos</span>
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="#intro">Introduccion</a></li>
+                    <li><a href="#fundamentals">Blockchain</a></li>
+                    <li><a href="#crypto">Criptografia</a></li>
+                    <li><a href="#consensus">Consenso</a></li>
+                </ul>
+            </div>
+
+            <!-- Grupo: Ecosistema -->
+            <div class="nav-group">
+                <div class="nav-group-header">
+                    <span><span class="group-icon">🌐</span> Ecosistema</span>
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="#networks">Redes</a></li>
+                    <li><a href="#wallets">Wallets</a></li>
+                </ul>
+            </div>
+
+            <!-- Grupo: Desarrollo -->
+            <div class="nav-group">
+                <div class="nav-group-header">
+                    <span><span class="group-icon">💻</span> Desarrollo</span>
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="#smart-contracts">Smart Contracts</a></li>
+                    <li><a href="#tokens">Tokens</a></li>
+                    <li><a href="#nfts">NFTs</a></li>
+                </ul>
+            </div>
+
+            <!-- Grupo: Aplicaciones -->
+            <div class="nav-group">
+                <div class="nav-group-header">
+                    <span><span class="group-icon">🚀</span> Aplicaciones</span>
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="#defi">DeFi</a></li>
+                    <li><a href="#web3">Web3</a></li>
+                </ul>
+            </div>
+
+            <!-- Grupo: Practica -->
+            <div class="nav-group">
+                <div class="nav-group-header">
+                    <span><span class="group-icon">🛠️</span> Practica</span>
+                    <span class="toggle-icon">▼</span>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="#tools">Herramientas</a></li>
+                    <li><a href="#security">Seguridad</a></li>
+                    <li><a href="#resources">Recursos</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="mode-toggle">
+                <label>Modo Presentacion</label>
+                <label class="switch">
+                    <input type="checkbox" id="presentationToggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Presentation Navigation -->
+    <div class="presentation-nav">
+        <button class="pres-btn" id="prevSlide">← Anterior</button>
+        <span class="slide-counter"><span id="currentSlide">1</span> / <span id="totalSlides">14</span></span>
+        <button class="pres-btn" id="nextSlide">Siguiente →</button>
+    </div>
+
+    <main>
+        <!-- Section 1: Hero/Intro -->
+        <section id="intro" class="hero">
+            <div class="hero-bg"></div>
+            <div class="hero-content">
+                <h1>🔗 Blockchain para Developers</h1>
+                <p>Entiende como funciona blockchain y como construir aplicaciones Web3. Sin rodeos, directo a lo que necesitas saber.</p>
+
+                <div class="card-grid" style="margin-top: 3rem;">
+                    <div class="card">
+                        <div class="card-icon">🎯</div>
+                        <h4>Al terminar este curso sabras:</h4>
+                        <ul class="feature-list">
+                            <li>Que vive on-chain y que no</li>
+                            <li>Que es un smart contract y como funciona</li>
+                            <li>Como una web interactua con blockchain</li>
+                            <li>Por donde seguir aprendiendo</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">⚡</div>
+                        <h4>Lo que necesitas traer:</h4>
+                        <ul class="feature-list">
+                            <li>Conocimientos basicos de programacion</li>
+                            <li>Familiaridad con JavaScript (ideal)</li>
+                            <li>Curiosidad y ganas de aprender</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Fundamentals -->
+        <section id="fundamentals">
+            <h2>📦 ¿Que es Blockchain?</h2>
+
+            <h3>El concepto en una frase</h3>
+            <p>Una <span class="highlight">blockchain</span> es una base de datos compartida donde todos pueden verificar que nadie hizo trampa.</p>
+
+            <div class="info-box">
+                <strong>🎯 Quedate con esta idea:</strong> Un libro contable publico donde cada pagina esta sellada. Una vez escrito, no se puede borrar sin que todos lo noten.
+            </div>
+
+            <h3>¿Para que sirve?</h3>
+            <p>Permite que personas que <strong>no se conocen ni confian entre si</strong> puedan acordar una verdad comun sin necesitar un intermediario (banco, notario, etc.).</p>
+
+            <h3>Las 4 caracteristicas clave</h3>
+            <div class="card-grid">
+                <div class="card">
+                    <div class="card-icon">🔒</div>
+                    <h4>Inmutable</h4>
+                    <p>Los datos no se pueden cambiar una vez registrados.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🌐</div>
+                    <h4>Descentralizada</h4>
+                    <p>No hay un servidor central. Miles de computadoras tienen una copia.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">👁️</div>
+                    <h4>Transparente</h4>
+                    <p>Cualquiera puede ver todas las transacciones.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🤝</div>
+                    <h4>Sin intermediarios</h4>
+                    <p>El protocolo garantiza las reglas, no una empresa.</p>
+                </div>
+            </div>
+
+            <h3>¿Como se ve en la practica?</h3>
+            <p>La blockchain es una cadena de "bloques". Cada bloque contiene transacciones y esta conectado al anterior:</p>
+
+            <div class="blockchain-viz">
+                <div class="block">
+                    <div class="block-header">Bloque 0</div>
+                    <div class="block-data">
+                        <span><strong>Transacciones:</strong> "Genesis"</span>
+                        <span><strong>Hash:</strong></span>
+                        <span class="block-hash">0xabc123...</span>
+                    </div>
+                </div>
+                <div class="block">
+                    <div class="block-header">Bloque 1</div>
+                    <div class="block-data">
+                        <span><strong>Transacciones:</strong> A→B 5 ETH</span>
+                        <span><strong>Apunta a:</strong></span>
+                        <span class="block-hash">0xabc123...</span>
+                    </div>
+                </div>
+                <div class="block">
+                    <div class="block-header">Bloque 2</div>
+                    <div class="block-data">
+                        <span><strong>Transacciones:</strong> B→C 2 ETH</span>
+                        <span><strong>Apunta a:</strong></span>
+                        <span class="block-hash">0xdef456...</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <strong>⚠️ ¿Que pasa si alguien quiere hacer trampa?</strong><br>
+                Si cambias un bloque, su "huella digital" (hash) cambia. Eso rompe la conexion con el siguiente bloque. Todos los nodos lo notarian y rechazarian el cambio.
+            </div>
+        </section>
+
+        <!-- Section 3: Cryptography -->
+        <section id="crypto">
+            <h2>🔐 Criptografia: Lo esencial</h2>
+
+            <p>No necesitas ser experto en criptografia para usar blockchain. Solo entiende estas dos ideas:</p>
+
+            <h3>1. Funciones Hash: La huella digital</h3>
+            <p>Un <span class="highlight">hash</span> toma cualquier dato y genera un codigo unico de tamaño fijo. Es como una huella digital.</p>
+
+            <div class="card-grid">
+                <div class="card">
+                    <h4>Propiedades importantes</h4>
+                    <ul>
+                        <li><strong>Determinista:</strong> Mismo input = mismo output, siempre</li>
+                        <li><strong>Unidireccional:</strong> No puedes "revertirlo"</li>
+                        <li><strong>Sensible:</strong> Un cambio minimo = hash totalmente diferente</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h4>¿Para que se usa?</h4>
+                    <ul>
+                        <li>Conectar bloques entre si</li>
+                        <li>Identificar transacciones</li>
+                        <li>Generar direcciones de wallet</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <strong>💡 Ejemplo:</strong><br>
+                "Hola" → <code>0x3d5f1c...</code><br>
+                "hola" → <code>0x8a7b2e...</code><br>
+                Un solo caracter cambia todo el hash.
+            </div>
+
+            <div class="warning-box">
+                <strong>📌 No necesitas memorizar esto ahora:</strong> Solo recuerda que el hash es como una huella digital unica e irreversible.
+            </div>
+
+            <h3>2. Claves Publica y Privada: Tu identidad</h3>
+            <p>En blockchain, tu identidad es un par de claves matematicamente relacionadas:</p>
+
+            <div class="diagram">
+                <div class="flow-diagram">
+                    <div class="flow-item">
+                        <strong>🔑 Clave Privada</strong><br>
+                        <small>Tu contraseña secreta</small><br>
+                        <small style="color: var(--accent-orange);">NUNCA compartir</small>
+                    </div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-item">
+                        <strong>🔓 Clave Publica</strong><br>
+                        <small>Se deriva de la privada</small><br>
+                        <small>Puedes compartirla</small>
+                    </div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-item">
+                        <strong>📍 Direccion</strong><br>
+                        <small>Como tu "numero de cuenta"</small><br>
+                        <small>0x742d35Cc...</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <strong>🎯 Quedate con esta idea:</strong> La clave privada es como la llave de tu casa. La direccion es como tu direccion postal - la puedes dar para que te envien cosas, pero no das tu llave.
+            </div>
+
+            <div class="technical-note">
+                <p>Blockchain usa criptografia de curva eliptica (ECDSA). Ethereum usa la curva secp256k1. Las direcciones son los ultimos 20 bytes del hash Keccak-256 de la clave publica.</p>
+            </div>
+        </section>
+
+        <!-- Section 4: Consensus -->
+        <section id="consensus">
+            <h2>🤝 Consenso: ¿Como se ponen de acuerdo?</h2>
+
+            <p>Si no hay un jefe central, ¿como deciden todos cual es la version correcta de la blockchain?</p>
+
+            <div class="info-box">
+                <strong>🎯 Quedate con esta idea:</strong> Miles de computadoras que no se conocen deben acordar que transacciones son validas. El mecanismo de consenso son las "reglas del juego" que todos siguen.
+            </div>
+
+            <div class="warning-box">
+                <strong>📌 No necesitas memorizar los detalles:</strong> Solo entiende que existen diferentes formas de lograr este acuerdo, cada una con sus trade-offs.
+            </div>
+
+            <h3>Los dos mecanismos principales</h3>
+            <div class="card-grid">
+                <div class="card">
+                    <div class="card-icon">⛏️</div>
+                    <h4>Proof of Work (PoW)</h4>
+                    <p><span class="badge badge-orange">Bitcoin</span></p>
+                    <p>Los "mineros" compiten resolviendo puzzles matematicos. El primero en resolver agrega el bloque.</p>
+                    <ul>
+                        <li><span class="highlight-green">+</span> Muy seguro y probado</li>
+                        <li><span class="highlight-orange">-</span> Consume mucha energia</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🥩</div>
+                    <h4>Proof of Stake (PoS)</h4>
+                    <p><span class="badge badge-purple">Ethereum</span></p>
+                    <p>Los validadores "apuestan" sus monedas. Se eligen al azar para crear bloques.</p>
+                    <ul>
+                        <li><span class="highlight-green">+</span> 99.9% menos energia</li>
+                        <li><span class="highlight-green">+</span> Mas rapido</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="technical-note">
+                <h4>Comparativa rapida</h4>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Mecanismo</th>
+                                <th>Velocidad</th>
+                                <th>Energia</th>
+                                <th>Ejemplo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Proof of Work</td>
+                                <td>~10 min/bloque</td>
+                                <td>🔴 Muy alta</td>
+                                <td>Bitcoin</td>
+                            </tr>
+                            <tr>
+                                <td>Proof of Stake</td>
+                                <td>~12 seg/bloque</td>
+                                <td>🟢 Muy baja</td>
+                                <td>Ethereum</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5: Networks L1/L2 -->
+        <section id="networks">
+            <h2>🌐 Redes: Layer 1 y Layer 2</h2>
+
+            <h3>¿Que es Layer 1?</h3>
+            <p>La <span class="highlight">blockchain base</span>. Es la red principal que procesa y guarda todas las transacciones.</p>
+
+            <div class="card-grid">
+                <div class="card">
+                    <div class="card-icon">🟠</div>
+                    <h4>Bitcoin</h4>
+                    <p>La original. Diseñada como "oro digital".</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">💎</div>
+                    <h4>Ethereum</h4>
+                    <p>La plataforma para smart contracts y dApps.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🟣</div>
+                    <h4>Solana, Avalanche, etc.</h4>
+                    <p>Alternativas mas rapidas con diferentes trade-offs.</p>
+                </div>
+            </div>
+
+            <h3>El problema de escalabilidad</h3>
+            <p>Ethereum solo puede procesar ~15 transacciones por segundo. Cuando hay mucha demanda, las tarifas suben mucho.</p>
+
+            <h3>¿Que es Layer 2?</h3>
+            <p>Soluciones <span class="highlight-purple">construidas sobre L1</span> para procesar transacciones mas rapido y barato, pero heredando la seguridad de la capa base.</p>
+
+            <div class="info-box">
+                <strong>💡 Analogia:</strong> Si L1 es la autopista principal (segura pero congestionada), L2 son carriles express que descargan trafico y luego consolidan en la autopista.
+            </div>
+
+            <div class="card-grid">
+                <div class="card">
+                    <h4>Rollups Optimistas</h4>
+                    <p><span class="badge badge-orange">Arbitrum, Optimism, Base</span></p>
+                    <p>Asumen que todo es valido. Hay tiempo para disputar si algo esta mal.</p>
+                </div>
+                <div class="card">
+                    <h4>ZK-Rollups</h4>
+                    <p><span class="badge badge-purple">zkSync, StarkNet</span></p>
+                    <p>Usan pruebas matematicas para validar lotes de transacciones.</p>
+                </div>
+            </div>
+
+            <div class="technical-note">
+                <h4>Costos tipicos</h4>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Red</th>
+                                <th>Tipo</th>
+                                <th>Costo por TX</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Ethereum</td>
+                                <td>L1</td>
+                                <td>$1 - $50+</td>
+                            </tr>
+                            <tr>
+                                <td>Arbitrum</td>
+                                <td>L2</td>
+                                <td>$0.01 - $0.50</td>
+                            </tr>
+                            <tr>
+                                <td>Polygon</td>
+                                <td>Sidechain</td>
+                                <td>$0.001 - $0.01</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 6: Wallets -->
+        <section id="wallets">
+            <h2>👛 Wallets: Tu puerta de entrada</h2>
+
+            <h3>¿Que es una wallet?</h3>
+            <p>Una <span class="highlight">wallet</span> es una aplicacion para guardar tus claves y firmar transacciones.</p>
+
+            <div class="info-box">
+                <strong>🎯 Quedate con esta idea:</strong> La wallet <span class="highlight">NO guarda tus criptos</span>. Tus criptos viven en blockchain (on-chain). La wallet solo guarda las llaves para acceder a ellas.
+            </div>
+
+            <div class="warning-box">
+                <strong>⚠️ "Not your keys, not your coins"</strong><br>
+                Si no controlas tu clave privada (como en exchanges tipo Binance), tecnicamente no eres dueño de tus criptos.
+            </div>
+
+            <h3>Tipos de wallets</h3>
+            <div class="card-grid">
+                <div class="card">
+                    <div class="card-icon">🔥</div>
+                    <h4>Hot Wallets</h4>
+                    <p>Conectadas a internet. Convenientes para uso diario.</p>
+                    <ul>
+                        <li><strong>Browser:</strong> MetaMask, Rabby</li>
+                        <li><strong>Mobile:</strong> Trust Wallet, Rainbow</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="card-icon">❄️</div>
+                    <h4>Cold Wallets</h4>
+                    <p>Sin conexion a internet. Para guardar grandes cantidades.</p>
+                    <ul>
+                        <li><strong>Hardware:</strong> Ledger, Trezor</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>Seed Phrase: Tu respaldo</h3>
+            <p>12 o 24 palabras que representan tu clave privada. Con estas palabras puedes recuperar tu wallet en cualquier dispositivo.</p>
+
+            <div class="warning-box">
+                <strong>🚨 REGLAS DE ORO:</strong>
+                <ul>
+                    <li>NUNCA compartas tu seed phrase con nadie</li>
+                    <li>Ningun soporte legitimo te la pedira</li>
+                    <li>Escribela en papel, no en tu computadora</li>
+                    <li>Guardala en un lugar seguro</li>
+                </ul>
+            </div>
+
+            <h3>MetaMask: La wallet mas usada</h3>
+            <p><span class="highlight">MetaMask</span> es la extension de navegador que usaras para conectarte a dApps. Instalala desde <span class="highlight">metamask.io</span></p>
+
+            <div class="info-box">
+                <strong>💡 Para practicar:</strong> Instala MetaMask, crea una wallet, y conectate a la testnet Sepolia para hacer pruebas sin gastar dinero real.
+            </div>
+        </section>
+
+        <!-- Section 7: Smart Contracts -->
+        <section id="smart-contracts">
+            <h2>📜 Smart Contracts: El corazon de Web3</h2>
+
+            <h3>¿Que es un smart contract?</h3>
+            <p>Un <span class="highlight">programa que vive en la blockchain</span>. Se ejecuta automaticamente cuando se cumplen ciertas condiciones. Nadie puede detenerlo ni cambiarlo.</p>
+
+            <div class="info-box">
+                <strong>🎯 Quedate con esta idea:</strong> Una maquina expendedora. Metes dinero, seleccionas producto, y automaticamente te lo da. No necesitas confiar en un vendedor.
+            </div>
+
+            <h3>¿Que NO es un smart contract?</h3>
+            <div class="warning-box">
+                <ul>
+                    <li><strong>NO es un contrato legal:</strong> Es codigo, no un documento juridico</li>
+                    <li><strong>NO es inteligente:</strong> Solo ejecuta lo que le programaron</li>
+                    <li><strong>NO puede actuar solo:</strong> Necesita que alguien lo llame para ejecutarse</li>
+                </ul>
+            </div>
+
+            <h3>¿Para que sirven?</h3>
+            <ul>
+                <li><strong>Tokens:</strong> Crear tu propia moneda o puntos</li>
+                <li><strong>NFTs:</strong> Certificados de propiedad unicos</li>
+                <li><strong>DeFi:</strong> Prestamos, exchanges, sin intermediarios</li>
+                <li><strong>DAOs:</strong> Organizaciones gobernadas por codigo</li>
+            </ul>
+
+            <h3>Caracteristicas clave</h3>
+            <div class="card-grid">
+                <div class="card">
+                    <h4>✅ Inmutables</h4>
+                    <p>Una vez desplegados, no se pueden cambiar.</p>
+                </div>
+                <div class="card">
+                    <h4>✅ Transparentes</h4>
+                    <p>El codigo es publico. Cualquiera puede verlo.</p>
+                </div>
+                <div class="card">
+                    <h4>✅ Autonomos</h4>
+                    <p>Se ejecutan solos cuando se cumplen las condiciones.</p>
+                </div>
+            </div>
+
+            <h3>Solidity: El lenguaje de Ethereum</h3>
+            <p>La mayoria de smart contracts se escriben en <span class="highlight-purple">Solidity</span>. Si sabes JavaScript, te parecera familiar.</p>
+
+            <pre><code>// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.19;
+
+// Un contrato super simple
+contract MiPrimerContrato {
+    // Variable que vive en blockchain
+    string public mensaje;
+
+    // Se ejecuta una vez al desplegar
+    constructor(string memory _mensaje) {
+        mensaje = _mensaje;
+    }
+
+    // Funcion para cambiar el mensaje
+    function cambiarMensaje(string memory _nuevo) public {
+        mensaje = _nuevo;
+    }
+}</code><span class="code-label">Solidity</span></pre>
+
+            <h3>¿Que es el Gas?</h3>
+            <p><span class="highlight">Gas</span> es la unidad que mide el trabajo computacional. Cada operacion tiene un costo en gas.</p>
+
+            <div class="info-box">
+                <strong>🎯 Quedate con esta idea:</strong>
+                <ul>
+                    <li><strong>Leer datos</strong> = Gratis (no cambia nada en blockchain)</li>
+                    <li><strong>Escribir datos</strong> = Cuesta gas (modifica el estado on-chain)</li>
+                </ul>
+                <p style="margin-top: 0.5rem;">Esto es fundamental: <span class="highlight">escribir en blockchain cuesta dinero</span>. Por eso guardamos solo lo esencial on-chain.</p>
+            </div>
+
+            <div class="technical-note">
+                <h4>Conceptos de Solidity para profundizar despues</h4>
+                <ul>
+                    <li><code>msg.sender</code> - Quien llama la funcion</li>
+                    <li><code>msg.value</code> - ETH enviados con la llamada</li>
+                    <li><code>mapping</code> - Como un diccionario clave-valor</li>
+                    <li><code>modifier</code> - Validaciones reutilizables</li>
+                    <li><code>event</code> - Logs para el frontend</li>
+                </ul>
+            </div>
+
+            <h3>🧟 Aprende Solidity jugando</h3>
+            <div class="card" style="border-color: var(--accent-green);">
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div class="card-icon">🧟</div>
+                    <div>
+                        <h4 style="margin: 0;">CryptoZombies</h4>
+                        <p style="margin: 0.5rem 0;"><span class="highlight">cryptozombies.io</span></p>
+                        <p style="margin: 0;">Tutorial interactivo donde aprendes Solidity creando un juego. Es gratis y muy entretenido.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 8: Tokens -->
+        <section id="tokens">
+            <h2>🪙 Tokens: Smart contracts con balance</h2>
+
+            <h3>¿Que es un token?</h3>
+            <p>Un <span class="highlight">token</span> es simplemente un smart contract que lleva registro de balances. Vive DENTRO de una blockchain existente.</p>
+
+            <div class="info-box">
+                <strong>🎯 Quedate con esta idea:</strong> Un token es un <span class="highlight">smart contract</span> con un mapping de direcciones a balances. Nada magico, solo codigo que dice "esta direccion tiene X tokens".
+            </div>
+
+            <div class="card-grid">
+                <div class="card">
+                    <div class="card-icon">🟡</div>
+                    <h4>Coin vs Token</h4>
+                    <p><strong>Coin:</strong> Nativo de blockchain (ETH, BTC)</p>
+                    <p><strong>Token:</strong> Creado con smart contract (USDT, UNI)</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">📋</div>
+                    <h4>¿Por que estandares (ERC)?</h4>
+                    <p>Para que todos los tokens funcionen igual en wallets y dApps.</p>
+                </div>
+            </div>
+
+            <h3>Los dos estandares principales</h3>
+            <div class="card-grid">
+                <div class="card">
+                    <h4>ERC-20: Fungibles</h4>
+                    <p><span class="badge badge-blue">Intercambiables</span></p>
+                    <p>Cada token es igual a otro (como billetes).</p>
+                    <p><strong>Ejemplos:</strong> USDT, USDC, UNI, LINK</p>
+                </div>
+                <div class="card">
+                    <h4>ERC-721: NFTs</h4>
+                    <p><span class="badge badge-purple">Unicos</span></p>
+                    <p>Cada token es diferente (como obras de arte).</p>
+                    <p><strong>Ejemplos:</strong> CryptoPunks, Bored Apes</p>
+                </div>
+            </div>
+
+            <h3>Crear un token es facil</h3>
+            <pre><code>// Token ERC-20 con OpenZeppelin
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+
+contract MiToken is ERC20 {
+    constructor() ERC20("MiToken", "MTK") {
+        _mint(msg.sender, 1000000 * 10**decimals());
+    }
+}</code><span class="code-label">ERC-20</span></pre>
+            <p>Con solo 6 lineas tienes un token funcional. OpenZeppelin hace el trabajo pesado.</p>
+        </section>
+
+        <!-- Section 9: NFTs -->
+        <section id="nfts">
+            <h2>🎨 NFTs: Ejemplo practico de on-chain vs off-chain</h2>
+
+            <div class="info-box">
+                <strong>🎯 ¿Por que vemos NFTs aqui?</strong> No para aprender a crear colecciones de arte, sino porque los NFTs ilustran perfectamente la separacion <span class="highlight">on-chain</span> vs <span class="highlight-purple">off-chain</span>.
+            </div>
+
+            <h3>El concepto clave</h3>
+            <p>Un NFT es un <span class="highlight">smart contract con una estructura particular</span>, no un archivo.</p>
+
+            <div class="card-grid">
+                <div class="card" style="border-color: var(--accent);">
+                    <h4>🔗 On-chain (en blockchain)</h4>
+                    <ul>
+                        <li><code>tokenId</code> - Identificador unico</li>
+                        <li><code>owner</code> - Quien es el dueño</li>
+                        <li><code>tokenURI</code> - Link a los metadatos</li>
+                    </ul>
+                    <p><small>Esto es inmutable y verificable</small></p>
+                </div>
+                <div class="card" style="border-color: var(--accent-secondary);">
+                    <h4>🌐 Off-chain (fuera de blockchain)</h4>
+                    <ul>
+                        <li>Imagen o video</li>
+                        <li>Metadatos (nombre, descripcion)</li>
+                        <li>Atributos y propiedades</li>
+                    </ul>
+                    <p><small>Guardado en IPFS o servidores</small></p>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <strong>🎯 Quedate con esta idea:</strong><br>
+                <strong>Un NFT NO es la imagen.</strong> El NFT es un registro de propiedad on-chain que <em>apunta</em> a un archivo off-chain. Guardar imagenes en blockchain seria muy caro.
+            </div>
+
+            <h3>¿Por que importa esto?</h3>
+            <p>Este patron on-chain/off-chain aplica a casi todo en Web3:</p>
+            <ul>
+                <li>Guardamos <strong>solo lo esencial</strong> en blockchain (propiedad, saldos, reglas)</li>
+                <li>Guardamos <strong>datos pesados</strong> fuera (imagenes, documentos, archivos)</li>
+            </ul>
+
+            <div class="technical-note">
+                <h4>Almacenamiento off-chain</h4>
+                <p>IPFS es el estandar para almacenar archivos de forma descentralizada. Servicios como Pinata o NFT.Storage facilitan subir a IPFS.</p>
+            </div>
+        </section>
+
+        <!-- Section 10: DeFi -->
+        <section id="defi">
+            <h2>💰 DeFi: Ejemplo de smart contracts en accion</h2>
+
+            <div class="info-box">
+                <strong>📌 Esto es solo para entender el flujo:</strong> DeFi es un ecosistema complejo. Aqui solo vemos como los smart contracts habilitan servicios financieros sin intermediarios.
+            </div>
+
+            <h3>La idea central</h3>
+            <p>DeFi usa <span class="highlight">smart contracts</span> para recrear servicios financieros. Todo funciona con codigo: las reglas, los prestamos, los intercambios.</p>
+
+            <h3>Tipos de aplicaciones</h3>
+            <div class="card-grid">
+                <div class="card">
+                    <div class="card-icon">🔄</div>
+                    <h4>DEX (Exchanges)</h4>
+                    <p>Intercambiar tokens sin intermediario.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🏦</div>
+                    <h4>Lending</h4>
+                    <p>Prestar/pedir prestado con cripto.</p>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <strong>⚠️ Importante:</strong> DeFi tiene riesgos reales (bugs, hacks, scams). Este curso no cubre DeFi a profundidad - solo es un ejemplo de smart contracts aplicados.
+            </div>
+        </section>
+
+        <!-- Section 11: Tools -->
+        <section id="tools">
+            <h2>🛠️ Herramientas de desarrollo</h2>
+
+            <div class="info-box">
+                <strong>📌 Para empezar solo necesitas:</strong> Remix (en el navegador) para prototipar, y eventualmente Hardhat para proyectos mas serios.
+            </div>
+
+            <h3>Tu stack de desarrollo</h3>
+            <div class="card-grid">
+                <div class="card">
+                    <div class="card-icon">🎹</div>
+                    <h4>Remix IDE</h4>
+                    <p><span class="badge badge-green">Empieza aqui</span></p>
+                    <p>IDE online perfecto para aprender. No requiere instalacion.</p>
+                    <p style="margin-top: 1rem;"><span class="highlight">remix.ethereum.org</span></p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">⚒️</div>
+                    <h4>Hardhat</h4>
+                    <p><span class="badge badge-purple">Para proyectos reales</span></p>
+                    <p>Framework profesional. Compilar, testear y desplegar.</p>
+                    <pre style="margin-top: 1rem;"><code>npm install --save-dev hardhat
+npx hardhat init</code></pre>
+                </div>
+            </div>
+
+            <h3>Estructura de un proyecto</h3>
+            <pre><code>mi-proyecto/
+├── contracts/          # Smart contracts (.sol)
+│   └── MiContrato.sol
+├── scripts/            # Scripts de deploy
+│   └── deploy.js
+├── test/               # Tests
+│   └── MiContrato.test.js
+├── hardhat.config.js   # Configuracion
+└── package.json</code><span class="code-label">Estructura</span></pre>
+
+            <h3>Comandos esenciales</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Accion</th>
+                            <th>Comando</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Compilar contratos</td>
+                            <td><code>npx hardhat compile</code></td>
+                        </tr>
+                        <tr>
+                            <td>Correr tests</td>
+                            <td><code>npx hardhat test</code></td>
+                        </tr>
+                        <tr>
+                            <td>Levantar red local</td>
+                            <td><code>npx hardhat node</code></td>
+                        </tr>
+                        <tr>
+                            <td>Desplegar a testnet</td>
+                            <td><code>npx hardhat run scripts/deploy.js --network sepolia</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Otras herramientas importantes</h3>
+            <div class="card-grid">
+                <div class="card">
+                    <h4>📚 OpenZeppelin</h4>
+                    <p>Contratos seguros y auditados listos para usar.</p>
+                    <pre><code>npm install @openzeppelin/contracts</code></pre>
+                </div>
+                <div class="card">
+                    <h4>🔍 Etherscan</h4>
+                    <p>Explorador de blockchain. Ver transacciones, verificar contratos.</p>
+                </div>
+                <div class="card">
+                    <h4>🌐 Infura / Alchemy</h4>
+                    <p>Nodos como servicio. Conectarte a Ethereum sin correr tu propio nodo.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 12: Web3 -->
+        <section id="web3">
+            <h2>🌐 Web3: Conectando tu app a blockchain</h2>
+
+            <div class="info-box">
+                <strong>🎯 Quedate con esta idea:</strong> Tu frontend (React, Vue, etc.) <span class="highlight">no habla directamente con blockchain</span>. Usa una libreria (Ethers.js) que se comunica con la wallet del usuario, y la wallet firma y envia las transacciones.
+            </div>
+
+            <h3>El modelo mental</h3>
+            <div class="diagram">
+                <pre style="text-align: left; display: inline-block; background: transparent; border: none;">
+    ┌─────────────────────────────────────────────────┐
+    │            TU FRONTEND (React, etc.)            │
+    │                      │                          │
+    │                      ▼                          │
+    │              Ethers.js / Wagmi                  │
+    │   (traduce JavaScript a llamadas blockchain)    │
+    └──────────────────────┼──────────────────────────┘
+                           │
+                           ▼
+    ┌─────────────────────────────────────────────────┐
+    │              WALLET (MetaMask)                  │
+    │   (guarda claves y firma transacciones)         │
+    └──────────────────────┼──────────────────────────┘
+                           │
+                           ▼
+    ┌─────────────────────────────────────────────────┐
+    │               BLOCKCHAIN                        │
+    │           Smart Contracts                       │
+    └─────────────────────────────────────────────────┘
+                </pre>
+            </div>
+
+            <h3>¿Que hace Ethers.js?</h3>
+            <p><span class="highlight">Ethers.js</span> traduce tu codigo JavaScript a llamadas que blockchain entiende:</p>
+            <ul>
+                <li><strong>Conectar</strong> con la wallet del usuario</li>
+                <li><strong>Leer</strong> datos de smart contracts (gratis)</li>
+                <li><strong>Escribir</strong> datos en smart contracts (requiere firma y gas)</li>
+            </ul>
+
+            <pre><code>import { ethers } from "ethers";
+
+// Conectar a MetaMask
+const provider = new ethers.BrowserProvider(window.ethereum);
+await provider.send("eth_requestAccounts", []);
+const signer = await provider.getSigner();
+
+// Leer balance
+const balance = await provider.getBalance(signer.address);
+console.log(ethers.formatEther(balance), "ETH");
+
+// Interactuar con un contrato
+const contract = new ethers.Contract(
+  "0x...",   // direccion del contrato
+  ABI,       // interfaz del contrato
+  signer     // quien firma
+);
+
+// Llamar una funcion
+const resultado = await contract.miFuncion();</code><span class="code-label">ethers.js</span></pre>
+
+            <h3>¿Que es el ABI?</h3>
+            <p>El <span class="highlight-purple">ABI</span> (Application Binary Interface) es como el "manual" del contrato. Le dice a tu app que funciones existen y como llamarlas.</p>
+
+            <div class="info-box">
+                <strong>📌 No necesitas memorizar esto ahora:</strong> El ABI se genera automaticamente cuando compilas. Solo recuerda que necesitas el ABI para interactuar con un contrato.
+            </div>
+
+            <div class="warning-box">
+                <strong>🎯 Resumen del flujo:</strong>
+                <ol>
+                    <li>Tu app usa Ethers.js para preparar la llamada</li>
+                    <li>MetaMask muestra la transaccion al usuario</li>
+                    <li>El usuario firma con su clave privada</li>
+                    <li>La transaccion se envia a blockchain</li>
+                </ol>
+            </div>
+
+            <div class="technical-note">
+                <h4>Stack moderno para React: Wagmi + Viem</h4>
+                <p>Si usas React, considera Wagmi que te da hooks listos para usar:</p>
+                <pre><code>const { address, isConnected } = useAccount();
+const { connect } = useConnect();
+const { data: balance } = useBalance({ address });</code></pre>
+            </div>
+        </section>
+
+        <!-- Section 13: Security -->
+        <section id="security">
+            <h2>🔒 Seguridad: Lo esencial</h2>
+
+            <div class="info-box">
+                <strong>📌 Para este curso basico:</strong> Solo necesitas conocer las reglas de oro para proteger tus claves y algunas buenas practicas iniciales.
+            </div>
+
+            <h3>Reglas de oro para usuarios</h3>
+            <div class="warning-box">
+                <ul>
+                    <li><strong>NUNCA</strong> compartas tu seed phrase con nadie</li>
+                    <li><strong>NUNCA</strong> la ingreses en sitios web</li>
+                    <li><strong>Nadie legitimo</strong> te la pedira jamas</li>
+                    <li>Verifica URLs antes de conectar tu wallet</li>
+                </ul>
+            </div>
+
+            <h3>Para desarrolladores</h3>
+            <div class="card-grid">
+                <div class="card">
+                    <h4>🛡️ Buenas practicas iniciales</h4>
+                    <ul class="feature-list">
+                        <li>Usa OpenZeppelin (codigo auditado)</li>
+                        <li>Usa Solidity 0.8+ (proteccion overflow)</li>
+                        <li>Testea antes de desplegar</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="technical-note">
+                <h4>Para profundizar despues</h4>
+                <ul>
+                    <li><strong>Ethernaut:</strong> Practica seguridad hackeando contratos vulnerables</li>
+                    <li><strong>Reentrancy:</strong> El bug mas famoso - actualiza estado ANTES de llamadas externas</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Section 14: Resources -->
+        <section id="resources">
+            <h2>📚 ¿Por donde seguir?</h2>
+
+            <div class="info-box">
+                <strong>🎯 Tu siguiente paso:</strong> Abre <span class="highlight">CryptoZombies</span> y completa las primeras lecciones. Es la mejor forma de consolidar lo aprendido hoy.
+            </div>
+
+            <h3>Cursos interactivos (gratuitos)</h3>
+            <div class="card-grid">
+                <div class="card" style="border-color: var(--accent-green);">
+                    <div class="card-icon">🧟</div>
+                    <h4>CryptoZombies</h4>
+                    <p><span class="badge badge-green">Empieza aqui</span></p>
+                    <p><span class="highlight">cryptozombies.io</span></p>
+                    <p>Aprende Solidity creando un juego.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🏃</div>
+                    <h4>Speedrun Ethereum</h4>
+                    <p><span class="highlight">speedrunethereum.com</span></p>
+                    <p>Challenges para construir dApps.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🔐</div>
+                    <h4>Ethernaut</h4>
+                    <p><span class="highlight">ethernaut.openzeppelin.com</span></p>
+                    <p>Practica seguridad hackeando contratos.</p>
+                </div>
+            </div>
+
+            <h3>Documentacion oficial</h3>
+            <div class="two-columns">
+                <div>
+                    <ul class="feature-list">
+                        <li><strong>Solidity:</strong> docs.soliditylang.org</li>
+                        <li><strong>Ethereum:</strong> ethereum.org/developers</li>
+                        <li><strong>Hardhat:</strong> hardhat.org/docs</li>
+                    </ul>
+                </div>
+                <div>
+                    <ul class="feature-list">
+                        <li><strong>OpenZeppelin:</strong> docs.openzeppelin.com</li>
+                        <li><strong>Ethers.js:</strong> docs.ethers.org</li>
+                        <li><strong>Wagmi:</strong> wagmi.sh</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>Testnets para practicar</h3>
+            <p>Practica sin gastar dinero real:</p>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Testnet</th>
+                            <th>Red</th>
+                            <th>Faucet</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Sepolia</td>
+                            <td>Ethereum</td>
+                            <td>sepoliafaucet.com</td>
+                        </tr>
+                        <tr>
+                            <td>Mumbai</td>
+                            <td>Polygon</td>
+                            <td>faucet.polygon.technology</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="section-divider"></div>
+
+            <h3 style="text-align: center;">🎉 ¡Gracias por participar!</h3>
+            <p style="text-align: center; font-size: 1.25rem;">Ahora tienes las bases para explorar Web3.</p>
+            <p style="text-align: center;">Recuerda: lo mas importante es <strong>practicar</strong>. Abre Remix, crea un contrato, despliega en testnet.</p>
+        </section>
+    </main>
+
+    <script>
+        // ====== SIDEBAR FUNCTIONALITY ======
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const navGroups = document.querySelectorAll('.nav-group');
+        const navLinks = document.querySelectorAll('.nav-links a');
+
+        // Toggle sidebar
+        function updateToggleIcon() {
+            if (window.innerWidth <= 1024) {
+                sidebarToggle.textContent = sidebar.classList.contains('open') ? '✕' : '☰';
+            } else {
+                sidebarToggle.textContent = document.body.classList.contains('sidebar-hidden') ? '▶' : '◀';
+            }
+        }
+
+        sidebarToggle.addEventListener('click', () => {
+            if (window.innerWidth <= 1024) {
+                sidebar.classList.toggle('open');
+                sidebarOverlay.classList.toggle('active');
+            } else {
+                document.body.classList.toggle('sidebar-hidden');
+            }
+            updateToggleIcon();
+        });
+
+        sidebarOverlay.addEventListener('click', () => {
+            sidebar.classList.remove('open');
+            sidebarOverlay.classList.remove('active');
+            updateToggleIcon();
+        });
+
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 1024) {
+                sidebar.classList.remove('open');
+                sidebarOverlay.classList.remove('active');
+            }
+            updateToggleIcon();
+        });
+
+        updateToggleIcon();
+
+        // Toggle nav groups
+        navGroups.forEach(group => {
+            const header = group.querySelector('.nav-group-header');
+            header.addEventListener('click', () => {
+                group.classList.toggle('collapsed');
+            });
+        });
+
+        // Close sidebar on mobile when clicking a link
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 1024) {
+                    sidebar.classList.remove('open');
+                    sidebarOverlay.classList.remove('active');
+                }
+            });
+        });
+
+        // Highlight active section on scroll
+        const sections = document.querySelectorAll('section');
+
+        function highlightActiveLink() {
+            let scrollPos = window.scrollY + 150;
+
+            sections.forEach(section => {
+                const top = section.offsetTop;
+                const height = section.offsetHeight;
+                const id = section.getAttribute('id');
+
+                if (scrollPos >= top && scrollPos < top + height) {
+                    navLinks.forEach(link => {
+                        link.classList.remove('active');
+                        if (link.getAttribute('href') === '#' + id) {
+                            link.classList.add('active');
+                        }
+                    });
+                }
+            });
+        }
+
+        window.addEventListener('scroll', highlightActiveLink);
+        highlightActiveLink();
+
+        // ====== PRESENTATION MODE ======
+        const presentationToggle = document.getElementById('presentationToggle');
+        let currentSlideIndex = 0;
+
+        presentationToggle.addEventListener('change', function() {
+            const isPresentation = this.checked;
+            document.body.classList.toggle('presentation-mode', isPresentation);
+
+            if (isPresentation) {
+                currentSlideIndex = 0;
+                document.body.style.overflow = 'hidden';
+                updateSlide();
+                updateActiveLinkForSlide();
+            } else {
+                document.body.style.overflow = '';
+                sections.forEach(s => s.classList.remove('active'));
+            }
+        });
+
+        document.getElementById('prevSlide').addEventListener('click', () => {
+            if (currentSlideIndex > 0) {
+                currentSlideIndex--;
+                updateSlide();
+                updateActiveLinkForSlide();
+            }
+        });
+
+        document.getElementById('nextSlide').addEventListener('click', () => {
+            if (currentSlideIndex < sections.length - 1) {
+                currentSlideIndex++;
+                updateSlide();
+                updateActiveLinkForSlide();
+            }
+        });
+
+        function updateSlide() {
+            sections.forEach((s, i) => {
+                s.classList.remove('active');
+                if (i === currentSlideIndex) {
+                    s.classList.add('active');
+                }
+            });
+            document.getElementById('currentSlide').textContent = currentSlideIndex + 1;
+            document.getElementById('totalSlides').textContent = sections.length;
+        }
+
+        function updateActiveLinkForSlide() {
+            const currentSection = sections[currentSlideIndex];
+            const id = currentSection.getAttribute('id');
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + id) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (!document.body.classList.contains('presentation-mode')) return;
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                document.getElementById('nextSlide').click();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                document.getElementById('prevSlide').click();
+            } else if (e.key === 'Escape') {
+                presentationToggle.checked = false;
+                presentationToggle.dispatchEvent(new Event('change'));
+            }
+        });
+
+        // Intersection Observer for animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.card, .demo-container, .diagram').forEach(el => observer.observe(el));
+
+        // Smooth scroll for nav links
+        navLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                if (document.body.classList.contains('presentation-mode')) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href').substring(1);
+                    const targetSection = document.getElementById(targetId);
+                    const index = Array.from(sections).indexOf(targetSection);
+                    if (index !== -1) {
+                        currentSlideIndex = index;
+                        updateSlide();
+                        updateActiveLinkForSlide();
+                    }
+                }
+            });
+        });
+
+        document.getElementById('totalSlides').textContent = sections.length;
+    </script>
+</body>
+</html>
