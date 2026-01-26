@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # blockchain-course
 
 This template should help get you started developing with Vue 3 in Vite.
@@ -52,3 +53,6 @@ npm run test:unit
 ```sh
 npm run lint
 ```
+=======
+# curso-blockchain-basico
+>>>>>>> 42c65c9350bf420d2a5bc5722453f4252f6e010c
