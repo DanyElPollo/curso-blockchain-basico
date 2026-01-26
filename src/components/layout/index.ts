@@ -1,0 +1,5 @@
+export { default as AppSidebar } from './AppSidebar.vue'
+export { default as SidebarHeader } from './SidebarHeader.vue'
+export { default as SidebarNavGroup } from './SidebarNavGroup.vue'
+export { default as SidebarFooter } from './SidebarFooter.vue'
+export { default as PresentationNav } from './PresentationNav.vue'
