@@ -29,7 +29,7 @@ const emit = defineEmits<{
 .presentation-nav {
   display: none;
   position: fixed;
-  bottom: var(--spacing-lg);
+  bottom: 0px;
   left: var(--sidebar-width);
   right: 0;
   justify-content: center;

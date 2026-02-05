@@ -13,9 +13,11 @@
     "lint": "eslint . --fix --cache"
   },
   "dependencies": {
+    "ethers": "^6.16.0",
     "pinia": "^3.0.4",
     "vue": "^3.5.26",
-    "vue-router": "^4.6.4"
+    "vue-router": "^4.6.4",
+    "web3": "^4.16.0"
   },
   "devDependencies": {
     "@tsconfig/node24": "^24.0.4",

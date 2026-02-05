@@ -46,7 +46,7 @@ const commandRows = [
         <p>IDE online perfecto para aprender. No requiere instalacion.</p>
         <p style="margin-top: 1rem"><span class="highlight">remix.ethereum.org</span></p>
       </BaseCard>
-      <BaseCard icon="⚒️" title="Hardhat">
+      <BaseCard icon="⚒️" title="Hardhat" link="https://hardhat.org/">
         <p><BaseBadge variant="purple">Para proyectos reales</BaseBadge></p>
         <p>Framework profesional. Compilar, testear y desplegar.</p>
         <CodeBlock
@@ -70,6 +70,8 @@ npx hardhat init"
       </BaseCard>
       <BaseCard title="🔍 Etherscan">
         <p>Explorador de blockchain. Ver transacciones, verificar contratos.</p>
+        <a class="link" href="https://metisscan.info/" target="_blank" rel="noopener noreferrer">Explorer Mainnet</a>
+        <a class="link" href="https://sepolia-explorer.metisdevops.link/" target="_blank" rel="noopener noreferrer">Explorer Testnet</a>
       </BaseCard>
       <BaseCard title="🌐 Infura / Alchemy">
         <p>Nodos como servicio. Conectarte a Ethereum sin correr tu propio nodo.</p>

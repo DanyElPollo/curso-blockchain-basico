@@ -14,7 +14,7 @@ const docsLeft = [
 
 const docsRight = [
   '<strong>OpenZeppelin:</strong> docs.openzeppelin.com',
-  '<strong>Ethers.js:</strong> docs.ethers.org',
+  '<strong>Web3.js:</strong> docs.web3js.org/',
   '<strong>Wagmi:</strong> wagmi.sh',
 ]
 
@@ -36,14 +36,14 @@ const testnetRows = [
 
     <InfoBox title="🎯 Tu siguiente paso:">
       <p>
-        Abre <span class="highlight">CryptoZombies</span> y completa las primeras lecciones. Es la
+        Abre <a href="https://cryptozombies.io/es/" target="_blank"><span class="highlight">CryptoZombies</span></a> y completa las primeras lecciones. Es la
         mejor forma de consolidar lo aprendido hoy.
       </p>
     </InfoBox>
 
     <h3>Cursos interactivos (gratuitos)</h3>
     <CardGrid>
-      <BaseCard icon="🧟" title="CryptoZombies" border-color="var(--accent-green)">
+      <BaseCard icon="🧟" title="CryptoZombies" border-color="var(--accent-green)" link="https://cryptozombies.io/es/">
         <p><BaseBadge variant="green">Empieza aqui</BaseBadge></p>
         <p><span class="highlight">cryptozombies.io</span></p>
         <p>Aprende Solidity creando un juego.</p>
@@ -104,5 +104,16 @@ section {
   background: var(--gradient-1);
   margin: var(--spacing-2xl) 0;
   border-radius: 2px;
+}
+
+a {
+    text-decoration: none; 
+    display: inline-block; 
+    transition: transform 0.3s ease; 
+}
+
+a:hover{
+    transform: scale(1.1);
+    padding: 0 8px;
 }
 </style>
